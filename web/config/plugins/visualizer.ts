@@ -1,13 +1,13 @@
 /**
- * Generation packaging analysis
- * 生成打包分析
+ * Generation packaging analysis.
+ *
+ * https://github.com/btd/rollup-plugin-visualizer
  */
-import visualizer from 'rollup-plugin-visualizer';
-import { isReportMode } from '../utils';
+import visualizerPlugin from 'rollup-plugin-visualizer';
 
 export default function configVisualizerPlugin() {
-  if (isReportMode()) {
-    return visualizer({
+  if (process.env.REPORT === 'true') {
+    return visualizerPlugin({
       filename: './node_modules/.cache/visualizer/stats.html',
       open: true,
       gzipSize: true,

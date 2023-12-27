@@ -1,12 +1,12 @@
 /**
- * Image resource files used to compress the output of the production environment
- * 图片压缩
+ * Image resource files used to compress the output of the production environment.
+ *
  * https://github.com/anncwb/vite-plugin-imagemin
  */
-import viteImagemin from 'vite-plugin-imagemin';
+import imageminPlugin from 'vite-plugin-imagemin';
 
 export default function configImageminPlugin() {
-  const imageminPlugin = viteImagemin({
+  return imageminPlugin({
     gifsicle: {
       optimizationLevel: 7,
       interlaced: false,
@@ -33,5 +33,4 @@ export default function configImageminPlugin() {
       ],
     },
   });
-  return imageminPlugin;
 }

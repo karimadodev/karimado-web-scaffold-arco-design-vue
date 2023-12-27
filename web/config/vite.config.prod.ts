@@ -1,9 +1,9 @@
 import { mergeConfig } from 'vite';
 import baseConfig from './vite.config.base';
-import configCompressPlugin from './plugin/compress';
-import configVisualizerPlugin from './plugin/visualizer';
-import configArcoResolverPlugin from './plugin/arcoResolver';
-import configImageminPlugin from './plugin/imagemin';
+import configCompressPlugin from './plugins/compress';
+import configVisualizerPlugin from './plugins/visualizer';
+import configArcoResolverPlugin from './plugins/arco-resolver';
+import configImageminPlugin from './plugins/imagemin';
 
 export default mergeConfig(
   {
@@ -11,8 +11,8 @@ export default mergeConfig(
     plugins: [
       configCompressPlugin('gzip'),
       configVisualizerPlugin(),
-      configArcoResolverPlugin(),
       configImageminPlugin(),
+      configArcoResolverPlugin(),
     ],
     build: {
       rollupOptions: {
