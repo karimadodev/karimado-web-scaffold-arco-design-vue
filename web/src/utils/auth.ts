@@ -1,19 +1,17 @@
-const TOKEN_KEY = 'token';
+const TOKEN_KEY = 'karimado.user.token';
 
-const isLogin = () => {
+export function isLoggedIn() {
   return !!localStorage.getItem(TOKEN_KEY);
-};
+}
 
-const getToken = () => {
+export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
-};
+}
 
-const setToken = (token: string) => {
+export function setToken(token: string) {
   localStorage.setItem(TOKEN_KEY, token);
-};
+}
 
-const clearToken = () => {
+export function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
-};
-
-export { isLogin, getToken, setToken, clearToken };
+}

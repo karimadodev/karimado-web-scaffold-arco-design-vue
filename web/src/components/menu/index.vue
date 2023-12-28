@@ -1,160 +1,130 @@
-<script lang="tsx">
-  import { defineComponent, ref, h, compile, computed } from 'vue';
+<template>
+  <renderFn />
+</template>
+
+<script lang="tsx" setup>
+  import { compile, computed, h, ref, onUnmounted } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';
-  import type { RouteMeta } from 'vue-router';
-  import { useAppStore } from '@/store';
-  import { listenerRouteChange } from '@/utils/route-listener';
-  import { openWindow, regexUrl } from '@/utils';
-  import useMenuTree from './use-menu-tree';
+  import { useRouter, RouteRecordRaw } from 'vue-router';
+  import { useStorage } from '@vueuse/core';
+  import { uniq } from 'lodash';
+  import config from '@/config';
+  import { appMenu, findAppMenuItem } from '@/router/app-menu';
+  import { useAppStore, useUserStore } from '@/store';
+  import {
+    listenerRouteChange,
+    removeRouteListener,
+  } from '@/utils/route-listener';
+  import type { RouteChangeEvent } from '@/utils/route-listener';
 
-  export default defineComponent({
-    emit: ['collapse'],
-    setup() {
-      const { t } = useI18n();
-      const appStore = useAppStore();
-      const router = useRouter();
-      const route = useRoute();
-      const { menuTree } = useMenuTree();
-      const collapsed = computed({
-        get() {
-          if (appStore.device === 'desktop') return appStore.menuCollapse;
-          return false;
-        },
-        set(value: boolean) {
-          appStore.updateSettings({ menuCollapse: value });
-        },
-      });
+  // i18n
+  const { t } = useI18n();
 
-      const topMenu = computed(() => appStore.topMenu);
-      const openKeys = ref<string[]>([]);
-      const selectedKey = ref<string[]>([]);
+  // store
+  const appStore = useAppStore();
+  const userStore = useUserStore();
 
-      const goto = (item: RouteRecordRaw) => {
-        // Open external link
-        if (regexUrl.test(item.path)) {
-          openWindow(item.path);
-          selectedKey.value = [item.name as string];
-          return;
-        }
-        // Eliminate external link side effects
-        const { hideInMenu, activeMenu } = item.meta as RouteMeta;
-        if (route.name === item.name && !hideInMenu && !activeMenu) {
-          selectedKey.value = [item.name as string];
-          return;
-        }
-        // Trigger router change
-        router.push({
-          name: item.name,
-        });
-      };
-      const findMenuOpenKeys = (target: string) => {
-        const result: string[] = [];
-        let isFind = false;
-        const backtrack = (item: RouteRecordRaw, keys: string[]) => {
-          if (item.name === target) {
-            isFind = true;
-            result.push(...keys);
-            return;
-          }
-          if (item.children?.length) {
-            item.children.forEach((el) => {
-              backtrack(el, [...keys, el.name as string]);
-            });
-          }
-        };
-        menuTree.value.forEach((el: RouteRecordRaw) => {
-          if (isFind) return; // Performance optimization
-          backtrack(el, [el.name as string]);
-        });
-        return result;
-      };
-      listenerRouteChange((newRoute) => {
-        const { requiresAuth, activeMenu, hideInMenu } = newRoute.meta;
-        if (requiresAuth && (!hideInMenu || activeMenu)) {
-          const menuOpenKeys = findMenuOpenKeys(
-            (activeMenu || newRoute.name) as string
-          );
+  // mode
+  const mode = computed(() => (appStore.topMenu ? 'horizontal' : 'vertical'));
 
-          const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
-          openKeys.value = [...keySet];
-
-          selectedKey.value = [
-            activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
-          ];
-        }
-      }, true);
-      const setCollapse = (val: boolean) => {
-        if (appStore.device === 'desktop')
-          appStore.updateSettings({ menuCollapse: val });
-      };
-
-      const renderSubMenu = () => {
-        function travel(_route: RouteRecordRaw[], nodes = []) {
-          if (_route) {
-            _route.forEach((element) => {
-              // This is demo, modify nodes as needed
-              const icon = element?.meta?.icon
-                ? () => h(compile(`<${element?.meta?.icon}/>`))
-                : null;
-              const node =
-                element?.children && element?.children.length !== 0 ? (
-                  <a-sub-menu
-                    key={element?.name}
-                    v-slots={{
-                      icon,
-                      title: () => h(compile(t(element?.meta?.locale || ''))),
-                    }}
-                  >
-                    {travel(element?.children)}
-                  </a-sub-menu>
-                ) : (
-                  <a-menu-item
-                    key={element?.name}
-                    v-slots={{ icon }}
-                    onClick={() => goto(element)}
-                  >
-                    {t(element?.meta?.locale || '')}
-                  </a-menu-item>
-                );
-              nodes.push(node as never);
-            });
-          }
-          return nodes;
-        }
-        return travel(menuTree.value);
-      };
-
-      return () => (
-        <a-menu
-          mode={topMenu.value ? 'horizontal' : 'vertical'}
-          v-model:collapsed={collapsed.value}
-          v-model:open-keys={openKeys.value}
-          show-collapse-button={appStore.device !== 'mobile'}
-          auto-open={false}
-          selected-keys={selectedKey.value}
-          auto-open-selected={true}
-          level-indent={34}
-          style="height: 100%;width:100%;"
-          onCollapse={setCollapse}
-        >
-          {renderSubMenu()}
-        </a-menu>
-      );
+  // collapsed
+  const collapsed = computed({
+    get: () => {
+      return appStore.topMenu || appStore.isMobile
+        ? false
+        : appStore.menuCollapse;
+    },
+    set: (value: boolean) => {
+      return appStore.changeMenuCollapse(value);
     },
   });
+  const showCollapseButton = computed(() => !appStore.isMobile);
+
+  // accordion
+  const accordion = ref<boolean>(config['app.menuAccordion'] ?? false);
+
+  // openKeys
+  const openKeys = useStorage<string[]>('app.menuOpenKeys', [], sessionStorage);
+
+  // selectedKey
+  const selectedKey = ref<string[]>([]);
+  const routeChangeHandler = (e: RouteChangeEvent) => {
+    const { to } = e;
+    if (to.matched[0].name === '$app') {
+      if (to.name === '$app') return;
+
+      const ancestors = findAppMenuItem(to);
+      const item = ancestors[ancestors.length - 1];
+      selectedKey.value = item ? [item.name as string] : [];
+      openKeys.value = uniq(
+        [
+          ...(accordion.value ? [] : openKeys.value),
+          ...ancestors.map((_item) => _item.name as string),
+        ].filter((_item) => _item.startsWith('--'))
+      );
+    } else {
+      selectedKey.value = [];
+    }
+  };
+  listenerRouteChange(routeChangeHandler, true);
+  onUnmounted(() => removeRouteListener(routeChangeHandler));
+
+  // select
+  const router = useRouter();
+  const goto = (item: RouteRecordRaw) => {
+    // switch to tab
+    const tab = appStore.tabs.find((e) => e.name === item.name);
+    if (tab) {
+      appStore.setNewTabOpenParams({ toTop: true });
+      router.push({ ...tab });
+      return;
+    }
+
+    // open new tab at the end of the tabs
+    appStore.setNewTabOpenPosition(appStore.tabs.length);
+    router.push({ name: item.name });
+  };
+
+  // render
+  const renderFn = () => {
+    const travel = (_route: RouteRecordRaw[]) => {
+      return _route.map((element) => {
+        const icon = element?.meta?.icon
+          ? () => h(compile(`<${element?.meta?.icon}/>`))
+          : null;
+        return element.children ? (
+          <a-sub-menu
+            key={element.name}
+            title={t(element?.meta?.title ?? '')}
+            v-slots={{ icon }}
+          >
+            {travel(element.children)}
+          </a-sub-menu>
+        ) : (
+          <a-menu-item
+            key={element.name}
+            v-slots={{ icon }}
+            onClick={() => goto(element)}
+          >
+            {t(element?.meta?.title ?? '')}
+          </a-menu-item>
+        );
+      });
+    };
+    return (
+      <a-menu
+        v-model:collapsed={collapsed.value}
+        v-model:open-keys={openKeys.value}
+        v-model:selected-keys={selectedKey.value}
+        style="width: 100%; height: 100%;"
+        show-collapse-button={showCollapseButton.value}
+        mode={mode.value}
+        accordion={accordion.value}
+      >
+        {travel(appMenu.value)}
+      </a-menu>
+    );
+  };
 </script>
 
-<style lang="less" scoped>
-  :deep(.arco-menu-inner) {
-    .arco-menu-inline-header {
-      display: flex;
-      align-items: center;
-    }
-    .arco-icon {
-      &:not(.arco-icon-down) {
-        font-size: 18px;
-      }
-    }
-  }
-</style>
+<style lang="less" scoped></style>

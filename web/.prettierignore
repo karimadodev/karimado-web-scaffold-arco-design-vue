@@ -1,7 +1,12 @@
-/dist/*
-.local
-.output.js
-/node_modules/**
+/dist
+/node_modules
+/components.d.ts
+/index.html
+/pnpm-lock.yaml
 
-**/*.svg
-**/*.sh
+/src/api/modules
+/src/router/routes/modules
+/src/views/modules
+
+/src/locale/base.ts
+/src/router/app-menu/routes.ts

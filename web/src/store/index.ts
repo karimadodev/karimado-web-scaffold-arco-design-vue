@@ -1,9 +1,8 @@
 import { createPinia } from 'pinia';
-import useAppStore from './modules/app';
-import useUserStore from './modules/user';
-import useTabBarStore from './modules/tab-bar';
+import useAppStore from './app';
+import useUserStore from './user';
 
 const pinia = createPinia();
 
-export { useAppStore, useUserStore, useTabBarStore };
 export default pinia;
+export { useAppStore, useUserStore };

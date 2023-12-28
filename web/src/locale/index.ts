@@ -1,22 +1,23 @@
-import { createI18n } from 'vue-i18n';
-import en from './en-US';
-import cn from './zh-CN';
+import { createI18n as _createI18n } from 'vue-i18n';
+import { getLocale, setLocale } from '@/utils/locale';
+import { LOCALE, LOCALE_OPTIONS } from './base';
+import { MESSAGES } from './lang';
 
-export const LOCALE_OPTIONS = [
-  { label: '中文', value: 'zh-CN' },
-  { label: 'English', value: 'en-US' },
-];
-const defaultLocale = localStorage.getItem('arco-locale') || 'zh-CN';
+const i18n = (() => {
+  let locale = getLocale();
+  if (locale == null || MESSAGES[locale as keyof typeof MESSAGES] == null) {
+    locale = LOCALE;
+    setLocale(locale);
+  }
 
-const i18n = createI18n({
-  locale: defaultLocale,
-  fallbackLocale: 'en-US',
-  legacy: false,
-  allowComposition: true,
-  messages: {
-    'en-US': en,
-    'zh-CN': cn,
-  },
-});
+  return _createI18n({
+    legacy: false,
+    locale,
+    fallbackLocale: LOCALE,
+    allowComposition: true,
+    messages: MESSAGES,
+  });
+})();
 
 export default i18n;
+export { LOCALE_OPTIONS };

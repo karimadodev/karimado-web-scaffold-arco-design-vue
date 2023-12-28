@@ -1,31 +1,37 @@
 /**
- * Listening to routes alone would waste rendering performance. Use the publish-subscribe model for distribution management
- * 单独监听路由会浪费渲染性能。使用发布订阅模式去进行分发管理。
+ * Listening to routes alone would waste rendering performance. Use the
+ * publish-subscribe model for distribution management.
  */
 import mitt, { Handler } from 'mitt';
 import type { RouteLocationNormalized } from 'vue-router';
 
+export interface RouteChangeEvent {
+  to: RouteLocationNormalized;
+  from?: RouteLocationNormalized;
+}
+
 const emitter = mitt();
-
 const key = Symbol('ROUTE_CHANGE');
-
 let latestRoute: RouteLocationNormalized;
 
-export function setRouteEmitter(to: RouteLocationNormalized) {
-  emitter.emit(key, to);
+export function setRouteEmitter(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+) {
+  emitter.emit(key, { to, from });
   latestRoute = to;
 }
 
 export function listenerRouteChange(
-  handler: (route: RouteLocationNormalized) => void,
+  handler: (_: RouteChangeEvent) => void,
   immediate = true
 ) {
   emitter.on(key, handler as Handler);
   if (immediate && latestRoute) {
-    handler(latestRoute);
+    handler({ to: latestRoute });
   }
 }
 
-export function removeRouteListener() {
-  emitter.off(key);
+export function removeRouteListener(handler: (_: RouteChangeEvent) => void) {
+  emitter.off(key, handler as Handler);
 }

@@ -3,30 +3,29 @@ import { useDebounceFn } from '@vueuse/core';
 import { useAppStore } from '@/store';
 import { addEventListen, removeEventListen } from '@/utils/event';
 
-const WIDTH = 992; // https://arco.design/vue/component/grid#responsivevalue
-
-function queryDevice() {
-  const rect = document.body.getBoundingClientRect();
-  return rect.width - 1 < WIDTH;
-}
+// @/assets/style/breakpoint.less
+const WIDTH = 992;
 
 export default function useResponsive(immediate?: boolean) {
   const appStore = useAppStore();
-  function resizeHandler() {
+
+  const resizeHandler = useDebounceFn(() => {
     if (!document.hidden) {
-      const isMobile = queryDevice();
-      appStore.toggleDevice(isMobile ? 'mobile' : 'desktop');
-      appStore.toggleMenu(isMobile);
+      const rect = document.body.getBoundingClientRect();
+      const isMobile = rect.width - 1 < WIDTH;
+      appStore.changeDevice(isMobile ? 'mobile' : 'desktop');
     }
-  }
-  const debounceFn = useDebounceFn(resizeHandler, 100);
+  }, 100);
+
   onMounted(() => {
-    if (immediate) debounceFn();
+    if (immediate) resizeHandler();
   });
+
   onBeforeMount(() => {
-    addEventListen(window, 'resize', debounceFn);
+    addEventListen(window, 'resize', resizeHandler);
   });
+
   onBeforeUnmount(() => {
-    removeEventListen(window, 'resize', debounceFn);
+    removeEventListen(window, 'resize', resizeHandler);
   });
 }
