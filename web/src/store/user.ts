@@ -1,15 +1,14 @@
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import {
-  create as authCreate,
-  destroy as authDestroy,
-} from '@/api/karimado/auth';
+import { createToken } from '@/api/karimado/auth/create-token';
+import { revokeToken } from '@/api/karimado/auth/revoke-token';
 import { setToken, clearToken } from '@/utils/auth';
-import type {
-  CreateRequestForm as AuthCreateRequestForm,
-  CreateRequest as AuthCreateRequest,
-  CreateResponseUserInfo as UserInfo,
-} from '@/api/karimado/auth';
+import type { CreateTokenRequest } from '@/api/karimado/auth/create-token';
+
+interface UserInfo {
+  name: string;
+  role: string;
+}
 
 const USER_INFO_KEY = 'karimado.user.info';
 const USER_INFO_DEFAULE = {
@@ -25,11 +24,11 @@ const useUserStore = defineStore('user', () => {
     { mergeDefaults: true }
   );
 
-  const login = async (formData: AuthCreateRequestForm) => {
+  const login = async (req: CreateTokenRequest) => {
     try {
-      const res = await authCreate({ form: formData } as AuthCreateRequest);
-      setToken(res.data.token);
-      info.value = { ...USER_INFO_DEFAULE, ...res.data.info };
+      const res = await createToken(req);
+      setToken(res.data);
+      info.value = { ...USER_INFO_DEFAULE };
     } catch (err) {
       clearToken();
       throw err;
@@ -38,7 +37,7 @@ const useUserStore = defineStore('user', () => {
 
   const logout = async () => {
     try {
-      await authDestroy();
+      await revokeToken();
     } finally {
       clearToken();
     }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import { Message } from '@arco-design/web-vue';
-import { getToken } from '@/utils/auth';
+import { getAccessToken } from '@/utils/auth';
 import { getLocale } from '@/utils/locale';
 
 export interface HttpResponse<T = unknown> {
@@ -27,7 +27,7 @@ instance.interceptors.request.use(
       config.headers = new axios.AxiosHeaders({});
     }
 
-    const token = getToken();
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -50,10 +50,13 @@ instance.interceptors.response.use(
   // Do something with response data
   (response) => {
     const res = response.data;
-    if (res.code === 0) return res; // Ok
-    if (Object.keys(res.errors || {}).length !== 0) return res; // Err, with detailed error messages
+    // Ok
+    if (res.code === 0) return res;
 
-    // Err, with only summary error messages
+    // Err, with detailed error messages
+    if (Object.keys(res.errors || {}).length !== 0) return res;
+
+    // Err, with summary error messages
     Message.error({
       content: res.message || 'Error',
       duration: 5 * 1000,

@@ -1,4 +1,4 @@
-const LOCALE_KEY = 'karimado.locale';
+const LOCALE_KEY = 'karimado.app.locale';
 
 export function getLocale() {
   return localStorage.getItem(LOCALE_KEY);
