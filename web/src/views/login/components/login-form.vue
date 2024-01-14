@@ -67,7 +67,7 @@
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useLoading } from '@/hooks';
   import { useUserStore } from '@/store';
-  import type { CreateTokenRequest } from '@/api/karimado/auth/create-token';
+  import type { AuthCreateTokenRequest } from '@/api/karimado';
 
   const router = useRouter();
   const { t } = useI18n();
@@ -92,7 +92,7 @@
 
     setLoading(true);
     try {
-      await userStore.login(values as CreateTokenRequest);
+      await userStore.login(values as AuthCreateTokenRequest);
       Message.success(t('auth.login.success'));
 
       const { redirect, ...othersQuery } = router.currentRoute.value.query;

@@ -8,10 +8,9 @@ export interface HttpResponse<T = unknown> {
   code: number;
   message: string;
   data?: T;
-  errors?: Record<string, string>;
 }
 
-const instance = axios.create({
+const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   paramsSerializer: {
     serialize: (params) => {
@@ -20,7 +19,7 @@ const instance = axios.create({
   },
 });
 
-instance.interceptors.request.use(
+client.interceptors.request.use(
   // Do something before request is sent
   (config) => {
     if (!config.headers) {
@@ -45,16 +44,14 @@ instance.interceptors.request.use(
   }
 );
 
-instance.interceptors.response.use(
+client.interceptors.response.use(
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
   (response) => {
     const res = response.data;
+
     // Ok
     if (res.code === 0) return res;
-
-    // Err, with detailed error messages
-    if (Object.keys(res.errors || {}).length !== 0) return res;
 
     // Err, with summary error messages
     Message.error({
@@ -74,4 +71,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance;
+export default client;

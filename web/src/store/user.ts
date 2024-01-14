@@ -1,9 +1,8 @@
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import { createToken } from '@/api/karimado/auth/create-token';
-import { revokeToken } from '@/api/karimado/auth/revoke-token';
+import { karimadoAPI } from '@/api';
 import { setToken, clearToken } from '@/utils/auth';
-import type { CreateTokenRequest } from '@/api/karimado/auth/create-token';
+import type { AuthCreateTokenRequest } from '@/api/karimado';
 
 interface UserInfo {
   name: string;
@@ -24,10 +23,10 @@ const useUserStore = defineStore('user', () => {
     { mergeDefaults: true }
   );
 
-  const login = async (req: CreateTokenRequest) => {
+  const login = async (req: AuthCreateTokenRequest) => {
     try {
-      const res = await createToken(req);
-      setToken(res.data);
+      const res = await karimadoAPI.auth.createToken(req);
+      setToken(res.data!);
       info.value = { ...USER_INFO_DEFAULE };
     } catch (err) {
       clearToken();
@@ -37,7 +36,7 @@ const useUserStore = defineStore('user', () => {
 
   const logout = async () => {
     try {
-      await revokeToken();
+      await karimadoAPI.auth.revokeToken();
     } finally {
       clearToken();
     }

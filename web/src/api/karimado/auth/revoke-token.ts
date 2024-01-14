@@ -1,7 +1,9 @@
-import axios from '@/api/axios';
+import client, { HttpResponse } from '@/api/client';
 
-export interface RevokeTokenResponse {}
+export interface AuthRevokeTokenResponse {}
 
-export function revokeToken() {
-  return axios.post<RevokeTokenResponse>('/karimado/auth/token/revoke');
+export function authRevokeToken() {
+  return client.post<any, HttpResponse<AuthRevokeTokenResponse>>(
+    '/karimado/auth/token/revoke'
+  );
 }

@@ -1,15 +1,18 @@
-import axios from '@/api/axios';
+import client, { HttpResponse } from '@/api/client';
 
-export interface CreateTokenRequest {
+export interface AuthCreateTokenRequest {
   username: string;
   password: string;
 }
 
-export interface CreateTokenResponse {
+export interface AuthCreateTokenResponse {
   access_token: string;
   refresh_token: string;
 }
 
-export function createToken(req: CreateTokenRequest) {
-  return axios.post<CreateTokenResponse>('/karimado/auth/token', req);
+export function authCreateToken(req: AuthCreateTokenRequest) {
+  return client.post<any, HttpResponse<AuthCreateTokenResponse>>(
+    '/karimado/auth/token',
+    req
+  );
 }
