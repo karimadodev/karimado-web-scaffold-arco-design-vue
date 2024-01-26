@@ -1,0 +1,24 @@
+version: "3.9"
+
+x-nodedev: &x-nodedev
+  build:
+    context: .
+    args:
+      - "UID=${UID:-1000}"
+      - "GID=${GID:-1000}"
+    network: host
+  volumes:
+    - .:/home/karimado/workspace
+  network_mode: host
+
+services:
+  nodedev:
+    <<: *x-nodedev
+    command: sleep infinity
+    stop_signal: SIGKILL
+    profiles: ["nodedev"]
+
+  vite-devserver:
+    <<: *x-nodedev
+    command: yarn run dev --host 0.0.0.0 --port 5173 --strictPort
+    profiles: ["nodedev"]
