@@ -137,7 +137,7 @@
       case Action.CloseCurrentToRight:
         nextTab = appStore.removeCurrentTabToTheRight(
           props.tab,
-          props.tabIndex
+          props.tabIndex,
         );
         if (nextTab != null) openAfterClose({ ...nextTab });
         break;

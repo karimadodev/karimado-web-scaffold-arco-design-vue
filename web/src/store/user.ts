@@ -20,7 +20,7 @@ const useUserStore = defineStore('user', () => {
     USER_INFO_KEY,
     USER_INFO_DEFAULE,
     localStorage,
-    { mergeDefaults: true }
+    { mergeDefaults: true },
   );
 
   const login = async (req: AuthCreateTokenRequest) => {

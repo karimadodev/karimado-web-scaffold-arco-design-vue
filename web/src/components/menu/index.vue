@@ -60,7 +60,7 @@
         [
           ...(accordion.value ? [] : openKeys.value),
           ...ancestors.map((_item) => _item.name as string),
-        ].filter((_item) => _item.startsWith('--'))
+        ].filter((_item) => _item.startsWith('--')),
       );
     } else {
       selectedKey.value = [];

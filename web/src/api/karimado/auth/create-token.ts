@@ -13,6 +13,6 @@ export interface AuthCreateTokenResponse {
 export function authCreateToken(req: AuthCreateTokenRequest) {
   return client.post<any, HttpResponse<AuthCreateTokenResponse>>(
     '/karimado/auth/token',
-    req
+    req,
   );
 }

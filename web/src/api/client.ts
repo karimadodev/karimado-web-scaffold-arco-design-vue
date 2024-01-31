@@ -41,7 +41,7 @@ client.interceptors.request.use(
   // Do something with request error
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 client.interceptors.response.use(
@@ -68,7 +68,7 @@ client.interceptors.response.use(
       duration: 5 * 1000,
     });
     return Promise.reject(error);
-  }
+  },
 );
 
 export default client;

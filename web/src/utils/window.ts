@@ -6,7 +6,7 @@ export function setWindowTitle(route: RouteLocationNormalized) {
   const pageTitle = route.meta?.title ?? '';
   if (pageTitle) {
     window.document.title = `${i18n.global.t(pageTitle)} - ${i18n.global.t(
-      siteTitle
+      siteTitle,
     )}`;
   } else {
     window.document.title = i18n.global.t(siteTitle);

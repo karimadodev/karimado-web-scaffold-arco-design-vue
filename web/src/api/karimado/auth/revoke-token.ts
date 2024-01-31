@@ -4,6 +4,6 @@ export interface AuthRevokeTokenResponse {}
 
 export function authRevokeToken() {
   return client.post<any, HttpResponse<AuthRevokeTokenResponse>>(
-    '/karimado/auth/token/revoke'
+    '/karimado/auth/token/revoke',
   );
 }

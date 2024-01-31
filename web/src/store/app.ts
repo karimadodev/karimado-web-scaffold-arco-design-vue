@@ -32,7 +32,7 @@ const useAppStore = defineStore('app', () => {
   const menuCollapse = useStorage<boolean>(
     'karimado.app.menuCollapse',
     false,
-    localStorage
+    localStorage,
   );
   const changeMenuCollapse = (collapse: boolean) => {
     menuCollapse.value = collapse;
@@ -84,7 +84,7 @@ const useAppStore = defineStore('app', () => {
       // open new tab next to the current active tab
       if (newTabOpenPosition.value === null && currentActiveTab.value != null) {
         const currentIndex = tabs.value.findIndex(
-          (e) => e.name === currentActiveTab.value?.name
+          (e) => e.name === currentActiveTab.value?.name,
         );
         if (currentIndex !== -1) {
           tabs.value.splice(currentIndex + 1, 0, to);
@@ -108,7 +108,7 @@ const useAppStore = defineStore('app', () => {
     tabs.value.splice(tabIndex, 1);
 
     const found = tabs.value.find(
-      (e) => e.name === currentActiveTab.value?.name
+      (e) => e.name === currentActiveTab.value?.name,
     );
     if (found) return null;
 
@@ -117,12 +117,12 @@ const useAppStore = defineStore('app', () => {
   };
   const removeCurrentTabToTheLeft = (
     tab: Tab,
-    tabIndex: number
+    tabIndex: number,
   ): Tab | null => {
     tabs.value.splice(0, tabIndex);
 
     const found = tabs.value.find(
-      (e) => e.name === currentActiveTab.value?.name
+      (e) => e.name === currentActiveTab.value?.name,
     );
     if (found) return null;
 
@@ -131,12 +131,12 @@ const useAppStore = defineStore('app', () => {
   };
   const removeCurrentTabToTheRight = (
     tab: Tab,
-    tabIndex: number
+    tabIndex: number,
   ): Tab | null => {
     tabs.value.splice(tabIndex + 1, tabs.value.length - tabIndex - 1);
 
     const found = tabs.value.find(
-      (e) => e.name === currentActiveTab.value?.name
+      (e) => e.name === currentActiveTab.value?.name,
     );
     if (found) return null;
 
@@ -155,7 +155,7 @@ const useAppStore = defineStore('app', () => {
   };
   const removeCurrentActiveTab = () => {
     const foundIndex = tabs.value.findIndex(
-      (e) => e.name === currentActiveTab.value?.name
+      (e) => e.name === currentActiveTab.value?.name,
     );
     tabs.value.splice(foundIndex, 1);
     currentActiveTab.value = null;
@@ -178,7 +178,7 @@ const useAppStore = defineStore('app', () => {
           return tab.name as string;
         });
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate: true },
   );
 
   return {

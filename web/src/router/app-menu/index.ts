@@ -29,7 +29,7 @@ const findAppMenuItem = (route: RouteLocationNormalized): RouteRecordRaw[] => {
   const travel = (
     _route: RouteRecordRaw[],
     path: string,
-    nodes: RouteRecordRaw[]
+    nodes: RouteRecordRaw[],
   ): boolean => {
     for (let i = 0; i < _route.length; i += 1) {
       const element = _route[i];
