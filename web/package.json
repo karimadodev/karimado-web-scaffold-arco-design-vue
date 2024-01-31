@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/souk4711/karimado-web-scaffold-arco-design-vue",
+    "url": "https://github.com/karimadodev/karimado-web-scaffold-arco-design-vue",
     "directory": "web"
   },
   "scripts": {

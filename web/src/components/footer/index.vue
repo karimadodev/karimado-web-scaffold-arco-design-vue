@@ -8,7 +8,7 @@
       <a
         class="arco-link"
         target="_blank"
-        href="https://github.com/souk4711/karimado"
+        href="https://github.com/karimadodev/karimado"
       >
         Powered by Karimado
       </a>
