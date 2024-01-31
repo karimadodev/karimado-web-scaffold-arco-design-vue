@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
-set -eou pipefail
-IFS=$'\n\t'
 
-docker compose up --build
+pnpm run dev --open
