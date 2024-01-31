@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",
+    "jsxImportSource": "vue",
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -12,7 +13,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["es2020", "dom"],
+    "lib": ["ES2020", "DOM"],
     "skipLibCheck": true
   },
   "include": ["src/**/*", "src/**/*.vue"],
