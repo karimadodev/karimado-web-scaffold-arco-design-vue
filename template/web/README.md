@@ -1,4 +1,4 @@
-# Karimado Web Scaffold + Arco Design Vue
+# Karimado Web + Arco Design Vue
 
 ## Development
 
@@ -12,11 +12,11 @@
    #    vite-devserver - vite dev server
    #           nodedev - node development environment container
    #
-   $ COMPOSE_PROFILES="*" docker compose up --build
+   $ docker compose up --build
    ...
    [+] Running 2/2
-   ✔ Container karimado-web-scaffold-arco-design-vue-vite-devserver-1  Created                                                                            0.1s
-   ✔ Container karimado-web-scaffold-arco-design-vue-nodedev-1         Created
+   ✔ Container karimado-web-arco-design-vue-vite-devserver-1  Created
+   ✔ Container karimado-web-arco-design-vue-nodedev-1         Created
    ...
    ```
 

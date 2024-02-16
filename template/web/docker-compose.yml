@@ -11,14 +11,14 @@ x-nodedev: &x-nodedev
     - .:/home/karimado/workspace
   network_mode: host
 
+name: karimado-web-arco-design-vue
+
 services:
   vite-devserver:
     <<: *x-nodedev
     command: yarn run dev --host 0.0.0.0 --port 5173 --strictPort
-    profiles: ['nodedev']
 
   nodedev:
     <<: *x-nodedev
     command: sleep infinity
     stop_signal: SIGKILL
-    profiles: ['nodedev']
