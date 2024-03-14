@@ -1,0 +1,7 @@
+[[tasks]]
+name = "dcsh"
+command = "docker compose exec nodedev bash"
+
+[[tasks]]
+name = "dcupb"
+command = "docker compose up --build"
