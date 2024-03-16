@@ -1,7 +1,15 @@
 [[tasks]]
-name = "dcsh"
-command = "docker compose exec nodedev bash"
-
-[[tasks]]
 name = "dcupb"
 command = "docker compose up --build"
+description = "KarimadoWeb: Launch a preconfigured Vue development container"
+
+[[tasks]]
+name = "dcsh"
+command = """\
+  {{#if CLI_ARGS}}\
+    docker compose exec nodedev {{CLI_ARGS}}\
+  {{else}}\
+    docker compose exec nodedev bash\
+  {{/if}}\
+  """
+description = "KarimadoWeb: Exec a command in the Vue development container"
