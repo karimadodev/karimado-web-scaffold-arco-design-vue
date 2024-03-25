@@ -5,11 +5,5 @@ description = "KarimadoWeb: Launch a preconfigured Vue development container"
 
 [[tasks]]
 name = "dcsh"
-command = """\
-  {{#if CLI_ARGS}}\
-    docker compose exec nodedev {{CLI_ARGS}}\
-  {{else}}\
-    docker compose exec nodedev bash\
-  {{/if}}\
-  """
+command = "docker compose exec nodedev {{ getvar_or_default 'CLI_ARGS' 'bash' }}"
 description = "KarimadoWeb: Exec a command in the Vue development container"
